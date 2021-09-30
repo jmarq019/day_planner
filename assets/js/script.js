@@ -3,6 +3,7 @@ $("#currentDay").text(today.format("dddd, MMM Do"));
 
 var containerEL = $(".container");
 var messagesArray = [];
+var currentHour = moment().format('H');
 
 var eightAM = $("#8");
 var nineAM = $("#9");
@@ -71,9 +72,6 @@ var valuesArray = [
 ]
 
 
-
-var currentHour = moment().format('H');
-
 for(var i = 0; i < valuesArray.length; i++){
     if(currentHour > valuesArray[i].value){
         valuesArray[i].element.siblings().first().css("background-color", "gray");
@@ -90,6 +88,18 @@ for(var i = 0; i < valuesArray.length; i++){
 
 }
 
+function overwriteMessages(newMessObj){
+        var k = 0;
+        while(k < messagesArray.length){
+            if(messagesArray[k].value == newMessObj.elementId){
+                messagesArray.splice(k, 1);
+            }
+            else{
+                k++;
+            }
+        }  
+}
+
 function handleFormSubmit(event){
     event.preventDefault();
     
@@ -101,17 +111,15 @@ function handleFormSubmit(event){
 
     messagesArray = JSON.parse(localStorage.getItem("myMessages")) || [];
 
+    var newMessObj = {elementId: targetId, message: scheduledItem}
     
     if(scheduledItem != undefined || scheduledItem != null){
-    messagesArray.push({elementId: targetId, message: scheduledItem});
+    overwriteMessages(newMessObj);
+    messagesArray.push(newMessObj);
     window.localStorage.setItem("myMessages", JSON.stringify(messagesArray));
     }
 
 }
-
-
-
-containerEL.on('click', '.btn', handleFormSubmit);
 
 function showMyMessages(){
 
@@ -125,5 +133,7 @@ function showMyMessages(){
     }
 
 }
+
+containerEL.on('click', '.btn', handleFormSubmit);
 
 $('Document').ready(showMyMessages());
