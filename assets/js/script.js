@@ -1,10 +1,13 @@
+//getting today's date and dsiplaying it on the page.
 var today = moment();
 $("#currentDay").text(today.format("dddd, MMM Do"));
 
+//global variables necessary for displaying the messages.
 var containerEL = $(".container");
 var messagesArray = [];
 var currentHour = moment().format('H');
 
+//variables corresponding to each hour block.
 var eightAM = $("#8");
 var nineAM = $("#9");
 var tenAM = $("#10");
@@ -17,7 +20,7 @@ var fourPM = $("#16");
 var fivePM = $("#17");
 
 
-
+//this array of objects correlates each hour block with a number value and an empty String.
 var valuesArray = [
 {
     element: eightAM,
@@ -71,23 +74,24 @@ var valuesArray = [
 },
 ]
 
-
+//this for loop sets the background color for the hour blocks.
 for(var i = 0; i < valuesArray.length; i++){
     if(currentHour > valuesArray[i].value){
-        valuesArray[i].element.siblings().first().css("background-color", "gray");
-        valuesArray[i].element.siblings().first().css("color", "black");
+        //any hours that have already passed will be gray.
+        valuesArray[i].element.siblings().first().addClass("past");
     }
     else if(currentHour == valuesArray[i].value){
-        valuesArray[i].element.siblings().first().css("background-color", "red");
-        valuesArray[i].element.siblings().first().css("color", "white");
+        //the current hour will be red.
+        valuesArray[i].element.siblings().first().addClass("present");
     }
     else{
-        valuesArray[i].element.siblings().first().css("background-color", "green");
-        valuesArray[i].element.siblings().first().css("color", "white");
+        //the hours not yet gone by will be green.
+        valuesArray[i].element.siblings().first().addClass("future");
     }
 
 }
 
+//this function will iterate through our array, taking out any objects with a repeat value.
 function overwriteMessages(newMessObj){
         var k = 0;
         while(k < messagesArray.length){
@@ -100,10 +104,11 @@ function overwriteMessages(newMessObj){
         }  
 }
 
+//when the save button is clicked, an object is pushed into an array and saved in local storage.
 function handleFormSubmit(event){
     event.preventDefault();
     
-    var targetButton = $(event.target);
+    var targetButton = $(this);
     //this variable stores the message written in the text area.
     scheduledItem = targetButton.parent().children().eq(1).val();
     //this variable stores the ID corresponding to the hour.
@@ -121,6 +126,7 @@ function handleFormSubmit(event){
 
 }
 
+//this function will populate any messages in the local storage in the corresponding box.
 function showMyMessages(){
 
     messagesArray = JSON.parse(localStorage.getItem("myMessages")) || [];
@@ -134,6 +140,8 @@ function showMyMessages(){
 
 }
 
+//event listener for the save buttons.
 containerEL.on('click', '.btn', handleFormSubmit);
 
+//on page load, show the existing messages.
 $('Document').ready(showMyMessages());
